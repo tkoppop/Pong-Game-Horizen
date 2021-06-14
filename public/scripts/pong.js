@@ -1,7 +1,6 @@
 //=============================================================================
 // PONG
 //=============================================================================
-
 Pong = {
     Defaults: {
       width: 640, // logical canvas width (browser will scale to physical canvas size - which is controlled by @media css queries)
@@ -19,7 +18,6 @@ Pong = {
         end: () => {}
       }
     },
-  
     EventsHandler: {
       initialize: function(pong) {
         this.game = pong.game;
@@ -28,13 +26,11 @@ Pong = {
           pong.cfg.eventHandlers
         );
       },
-  
       notify: function(event, message, data) {
         const eventHandler = this.handlers[event] || (() => {});
         eventHandler(message, data);
       }
     },
-  
     Colors: {
       walls: "white",
       ball: "white",
@@ -43,9 +39,7 @@ Pong = {
       predictionGuess: "yellow",
       predictionExact: "red"
     },
-  
     Images: ["images/press1.png", "images/press2.png", "images/winner.png"],
-  
     Levels: [
       { aiReaction: 0.2, aiError: 40 }, // 0:  ai is losing by 8
       { aiReaction: 0.3, aiError: 50 }, // 1:  ai is losing by 7
@@ -65,9 +59,7 @@ Pong = {
       { aiReaction: 1.7, aiError: 190 }, // 15: ai is winning by 7
       { aiReaction: 1.8, aiError: 200 } // 16: ai is winning by 8
     ],
-  
     //-----------------------------------------------------------------------------
-  
     initialize: function(runner, cfg) {
       Game.loadImages(
         Pong.Images,
@@ -90,7 +82,6 @@ Pong = {
         }.bind(this)
       );
     },
-  
     startDemo: function() {
       this.start(0);
     },
@@ -100,7 +91,6 @@ Pong = {
     startDoublePlayer: function() {
       this.start(2);
     },
-  
     start: function(numPlayers) {
       this.eventsHandler.notify(
         "start",
@@ -109,7 +99,6 @@ Pong = {
           numPlayers
         }
       );
-  
       if (!this.playing) {
         this.scores = [0, 0];
         this.playing = true;
@@ -119,7 +108,6 @@ Pong = {
         this.runner.hideCursor();
       }
     },
-  
     stop: function(ask) {
       if (this.playing) {
         if (!ask || this.runner.confirm("Abandon game in progress ?")) {
@@ -130,11 +118,9 @@ Pong = {
         }
       }
     },
-  
     level: function(playerNo) {
       return 8 + (this.scores[playerNo] - this.scores[playerNo ? 0 : 1]);
     },
-  
     goal: function(playerNo) {
       this.sounds.goal();
       this.scores[playerNo] += 1;
@@ -146,7 +132,6 @@ Pong = {
         this.rightPaddle.setLevel(this.level(1));
       }
     },
-  
     finish: function(winnerPlayerNo) {
       this.eventsHandler.notify("end", "Game finished", {
         winner: winnerPlayerNo
@@ -154,7 +139,6 @@ Pong = {
       this.menu.declareWinner(winnerPlayerNo);
       this.stop();
     },
-  
     update: function(dt) {
       this.leftPaddle.update(dt, this.ball);
       this.rightPaddle.update(dt, this.ball);
@@ -170,7 +154,6 @@ Pong = {
         else if (this.ball.right < 0) this.goal(1);
       }
     },
-  
     draw: function(ctx) {
       this.court.draw(ctx, this.scores[0], this.scores[1]);
       this.leftPaddle.draw(ctx);
@@ -178,7 +161,6 @@ Pong = {
       if (this.playing) this.ball.draw(ctx);
       else this.menu.draw(ctx);
     },
-  
     onkeydown: function(keyCode) {
       switch (keyCode) {
         // case Game.KEY.ZERO:
@@ -208,7 +190,6 @@ Pong = {
           break;
       }
     },
-  
     onkeyup: function(keyCode) {
       switch (keyCode) {
         case Game.KEY.Q:
@@ -225,7 +206,6 @@ Pong = {
           break;
       }
     },
-  
     showStats: function(on) {
       this.cfg.stats = on;
     },
@@ -239,11 +219,9 @@ Pong = {
     enableSound: function(on) {
       this.cfg.sound = on;
     },
-  
     //=============================================================================
     // MENU
     //=============================================================================
-  
     Menu: {
       initialize: function(pong) {
         var press1 = pong.images["images/press1.png"];
@@ -266,11 +244,9 @@ Pong = {
           y: 6 * pong.cfg.wallWidth
         };
       },
-  
       declareWinner: function(playerNo) {
         this.winner = playerNo;
       },
-  
       draw: function(ctx) {
         ctx.drawImage(this.press1.image, this.press1.x, this.press1.y);
         // ctx.drawImage(this.press2.image, this.press2.x, this.press2.y);
@@ -280,11 +256,9 @@ Pong = {
           ctx.drawImage(this.winner2.image, this.winner2.x, this.winner2.y);
       }
     },
-  
     //=============================================================================
     // SOUNDS
     //=============================================================================
-  
     Sounds: {
       initialize: function(pong) {
         this.game = pong;
@@ -298,12 +272,10 @@ Pong = {
           };
         }
       },
-  
       play: function(name) {
         if (this.supported && this.game.cfg.sound && this.files[name])
           this.files[name].play();
       },
-  
       ping: function() {
         this.play("ping");
       },
@@ -317,17 +289,14 @@ Pong = {
         /*this.play('goal');*/
       }
     },
-  
     //=============================================================================
     // COURT
     //=============================================================================
-  
     Court: {
       initialize: function(pong) {
         var w = pong.width;
         var h = pong.height;
         var ww = pong.cfg.wallWidth;
-  
         this.ww = ww;
         this.walls = [];
         this.walls.push({ x: 0, y: 0, width: w, height: ww });
@@ -342,13 +311,11 @@ Pong = {
             height: ww
           });
         }
-  
         var sw = 3 * ww;
         var sh = 4 * ww;
         this.score1 = { x: 0.5 + w / 2 - 1.5 * ww - sw, y: 2 * ww, w: sw, h: sh };
         this.score2 = { x: 0.5 + w / 2 + 1.5 * ww, y: 2 * ww, w: sw, h: sh };
       },
-  
       draw: function(ctx, scorePlayer1, scorePlayer2) {
         ctx.fillStyle = Pong.Colors.walls;
         for (var n = 0; n < this.walls.length; n++)
@@ -375,7 +342,6 @@ Pong = {
           this.score2.h
         );
       },
-  
       drawDigit: function(ctx, n, x, y, w, h) {
         ctx.fillStyle = Pong.Colors.score;
         var dw = (dh = (this.ww * 4) / 5);
@@ -388,7 +354,6 @@ Pong = {
         if (blocks[5]) ctx.fillRect(x + w - dw, y + h / 2, dw, h / 2);
         if (blocks[6]) ctx.fillRect(x, y + h - dh, w, dh);
       },
-  
       DIGITS: [
         [1, 1, 1, 0, 1, 1, 1], // 0
         [0, 0, 1, 0, 0, 1, 0], // 1
@@ -402,11 +367,9 @@ Pong = {
         [1, 1, 1, 1, 0, 1, 0] // 9
       ]
     },
-  
     //=============================================================================
     // PADDLE
     //=============================================================================
-  
     Paddle: {
       initialize: function(pong, rhs) {
         this.pong = pong;
@@ -421,7 +384,6 @@ Pong = {
         );
         this.setdir(0);
       },
-  
       setpos: function(x, y) {
         this.x = x;
         this.y = y;
@@ -430,12 +392,10 @@ Pong = {
         this.top = this.y;
         this.bottom = this.y + this.height;
       },
-  
       setdir: function(dy) {
         this.up = dy < 0 ? -dy : 0;
         this.down = dy > 0 ? dy : 0;
       },
-  
       setAuto: function(on, level) {
         if (on && !this.auto) {
           this.auto = true;
@@ -445,14 +405,11 @@ Pong = {
           this.setdir(0);
         }
       },
-  
       setLevel: function(level) {
         if (this.auto) this.level = Pong.Levels[level];
       },
-  
       update: function(dt, ball) {
         if (this.auto) this.ai(dt, ball);
-  
         var amount = this.down - this.up;
         if (amount != 0) {
           var y = this.y + amount * dt * this.speed;
@@ -461,7 +418,6 @@ Pong = {
           this.setpos(this.x, y);
         }
       },
-  
       ai: function(dt, ball) {
         if (
           (ball.x < this.left && ball.dx < 0) ||
@@ -471,9 +427,7 @@ Pong = {
           this.stopMovingDown();
           return;
         }
-  
         this.predict(ball, dt);
-  
         if (this.prediction) {
           if (this.prediction.y < this.top + this.height / 2 - 5) {
             this.stopMovingDown();
@@ -487,7 +441,6 @@ Pong = {
           }
         }
       },
-  
       predict: function(ball, dt) {
         // only re-predict if the ball changed direction, or its been some amount of time since last prediction
         if (
@@ -499,7 +452,6 @@ Pong = {
           this.prediction.since += dt;
           return;
         }
-  
         var pt = Pong.Helper.ballIntercept(
           ball,
           { left: this.left, right: this.right, top: -10000, bottom: 10000 },
@@ -509,7 +461,6 @@ Pong = {
         if (pt) {
           var t = this.minY + ball.radius;
           var b = this.maxY + this.height - ball.radius;
-  
           while (pt.y < t || pt.y > b) {
             if (pt.y < t) {
               pt.y = t + (t - pt.y);
@@ -521,7 +472,6 @@ Pong = {
         } else {
           this.prediction = null;
         }
-  
         if (this.prediction) {
           this.prediction.since = 0;
           this.prediction.dx = ball.dx;
@@ -536,7 +486,6 @@ Pong = {
           this.prediction.y = this.prediction.y + Game.random(-error, error);
         }
       },
-  
       draw: function(ctx) {
         ctx.fillStyle = Pong.Colors.walls;
         ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -557,7 +506,6 @@ Pong = {
           );
         }
       },
-  
       moveUp: function() {
         this.up = 1;
       },
@@ -571,11 +519,9 @@ Pong = {
         this.down = 0;
       }
     },
-  
     //=============================================================================
     // BALL
     //=============================================================================
-  
     Ball: {
       initialize: function(pong) {
         this.pong = pong;
@@ -587,7 +533,6 @@ Pong = {
         this.speed = (this.maxX - this.minX) / pong.cfg.ballSpeed;
         this.accel = pong.cfg.ballAccel;
       },
-  
       reset: function(playerNo) {
         this.footprints = [];
         this.setpos(
@@ -596,7 +541,6 @@ Pong = {
         );
         this.setdir(playerNo == 1 ? -this.speed : this.speed, this.speed);
       },
-  
       setpos: function(x, y) {
         this.x = x;
         this.y = y;
@@ -605,14 +549,12 @@ Pong = {
         this.right = this.x + this.radius;
         this.bottom = this.y + this.radius;
       },
-  
       setdir: function(dx, dy) {
         this.dxChanged = this.dx < 0 != dx < 0; // did horizontal direction change
         this.dyChanged = this.dy < 0 != dy < 0; // did vertical direction change
         this.dx = dx;
         this.dy = dy;
       },
-  
       footprint: function() {
         if (this.pong.cfg.footprints) {
           if (!this.footprintCount || this.dxChanged || this.dyChanged) {
@@ -624,7 +566,6 @@ Pong = {
           }
         }
       },
-  
       update: function(dt, leftPaddle, rightPaddle) {
         pos = Pong.Helper.accelerate(
           this.x,
@@ -634,7 +575,6 @@ Pong = {
           this.accel,
           dt
         );
-  
         if (pos.dy > 0 && pos.y > this.maxY) {
           pos.y = this.maxY;
           pos.dy = -pos.dy;
@@ -642,10 +582,8 @@ Pong = {
           pos.y = this.minY;
           pos.dy = -pos.dy;
         }
-  
         var paddle = pos.dx < 0 ? leftPaddle : rightPaddle;
         var pt = Pong.Helper.ballIntercept(this, paddle, pos.nx, pos.ny);
-  
         if (pt) {
           switch (pt.d) {
             case "left":
@@ -659,17 +597,14 @@ Pong = {
               pos.dy = -pos.dy;
               break;
           }
-  
           // add/remove spin based on paddle direction
           if (paddle.up) pos.dy = pos.dy * (pos.dy < 0 ? 0.5 : 1.5);
           else if (paddle.down) pos.dy = pos.dy * (pos.dy > 0 ? 0.5 : 1.5);
         }
-  
         this.setpos(pos.x, pos.y);
         this.setdir(pos.dx, pos.dy);
         this.footprint();
       },
-  
       draw: function(ctx) {
         var w = (h = this.radius * 2);
         ctx.fillStyle = Pong.Colors.ball;
@@ -687,11 +622,9 @@ Pong = {
         }
       }
     },
-  
     //=============================================================================
     // HELPER
     //=============================================================================
-  
     Helper: {
       accelerate: function(x, y, dx, dy, accel, dt) {
         var x2 = x + dt * dx + accel * dt * dt * 0.5;
@@ -700,7 +633,6 @@ Pong = {
         var dy2 = dy + accel * dt * (dy > 0 ? 1 : -1);
         return { nx: x2 - x, ny: y2 - y, x: x2, y: y2, dx: dx2, dy: dy2 };
       },
-  
       intercept: function(x1, y1, x2, y2, x3, y3, x4, y4, d) {
         var denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
         if (denom != 0) {
@@ -716,7 +648,6 @@ Pong = {
         }
         return null;
       },
-  
       ballIntercept: function(ball, rect, nx, ny) {
         var pt;
         if (nx < 0) {
@@ -774,7 +705,6 @@ Pong = {
         return pt;
       }
     }
-  
     //=============================================================================
   }; // Pong
   
