@@ -11,7 +11,6 @@
 //                        an initialize constructor method if one exists
 //
 //=============================================================================
-
 if (!Function.prototype.bind) {
     Function.prototype.bind = function(obj) {
       var slice = [].slice,
@@ -29,7 +28,6 @@ if (!Function.prototype.bind) {
       return bound;
     };
   }
-  
   if (!Object.create) {
     Object.create = function(base) {
       function F() {}
@@ -37,7 +35,6 @@ if (!Function.prototype.bind) {
       return new F();
     };
   }
-  
   if (!Object.construct) {
     Object.construct = function(base) {
       var instance = Object.create(base);
@@ -46,7 +43,6 @@ if (!Function.prototype.bind) {
       return instance;
     };
   }
-  
   if (!Object.extend) {
     Object.extend = function(destination, source) {
       for (var property in source) {
@@ -56,7 +52,6 @@ if (!Function.prototype.bind) {
       return destination;
     };
   }
-  
   /* NOT READY FOR PRIME TIME
   if (!window.requestAnimationFrame) {// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
     window.requestAnimationFrame = window.webkitRequestAnimationFrame || 
@@ -68,11 +63,9 @@ if (!Function.prototype.bind) {
                                    }
   }
   */
-  
   //=============================================================================
   // GAME
   //=============================================================================
-  
   Game = {
     compatible: function() {
       return (
@@ -83,12 +76,10 @@ if (!Function.prototype.bind) {
         Game.ua.hasCanvas
       );
     },
-  
     start: function(id, game, cfg) {
       if (Game.compatible())
         return Object.construct(Game.Runner, id, game, cfg).game; // return the game instance, not the runner (caller can always get at the runner via game.runner)
     },
-  
     ua: (function() {
       // should avoid user agent sniffing... but sometimes you just gotta do what you gotta do
       var ua = navigator.userAgent.toLowerCase();
@@ -97,13 +88,11 @@ if (!Function.prototype.bind) {
       key = key || (ua.indexOf("chrome") > -1 ? "chrome" : null);
       key = key || (ua.indexOf("safari") > -1 ? "safari" : null);
       key = key || (ua.indexOf("msie") > -1 ? "ie" : null);
-  
       try {
         var re = key == "ie" ? "msie (\\d)" : key + "\\/(\\d\\.\\d)";
         var matches = ua.match(new RegExp(re, "i"));
         var version = matches ? parseFloat(matches[1]) : null;
       } catch (e) {}
-  
       return {
         full: ua,
         name: key + (version ? " " + version.toString() : ""),
@@ -117,22 +106,18 @@ if (!Function.prototype.bind) {
         hasAudio: typeof Audio != "undefined"
       };
     })(),
-  
     addEvent: function(obj, type, fn) {
       obj.addEventListener(type, fn, false);
     },
     removeEvent: function(obj, type, fn) {
       obj.removeEventListener(type, fn, false);
     },
-  
     ready: function(fn) {
       if (Game.compatible()) Game.addEvent(document, "DOMContentLoaded", fn);
     },
-  
     createCanvas: function() {
       return document.createElement("canvas");
     },
-  
     createAudio: function(src) {
       try {
         var a = new Audio(src);
@@ -142,7 +127,6 @@ if (!Function.prototype.bind) {
         return null;
       }
     },
-  
     loadImages: function(sources, callback) {
       /* load multiple images and callback when ALL have finished loading */
       var images = {};
@@ -161,15 +145,12 @@ if (!Function.prototype.bind) {
         }
       }
     },
-  
     random: function(min, max) {
       return min + Math.random() * (max - min);
     },
-  
     timestamp: function() {
       return new Date().getTime();
     },
-  
     KEY: {
       BACKSPACE: 8,
       TAB: 9,
@@ -195,9 +176,7 @@ if (!Function.prototype.bind) {
       Q: 81,
       TILDA: 192
     },
-  
     //-----------------------------------------------------------------------------
-  
     Runner: {
       initialize: function(id, game, cfg) {
         this.cfg = Object.extend(game.Defaults || {}, cfg || {}); // use game defaults (if any) and extend with custom cfg (if any)
@@ -216,20 +195,16 @@ if (!Function.prototype.bind) {
         this.back2d = this.back.getContext("2d");
         this.addEvents();
         this.resetStats();
-  
         this.game = Object.construct(game, this, this.cfg); // finally construct the game object itself
       },
-  
       start: function() {
         // game instance should call runner.start() when its finished initializing and is ready to start the game loop
         this.lastFrame = Game.timestamp();
         this.timer = setInterval(this.loop.bind(this), this.interval);
       },
-  
       stop: function() {
         clearInterval(this.timer);
       },
-  
       loop: function() {
         var start = Game.timestamp();
         this.update((start - this.lastFrame) / 1000.0); // send dt as seconds
@@ -239,11 +214,9 @@ if (!Function.prototype.bind) {
         this.updateStats(middle - start, end - middle);
         this.lastFrame = start;
       },
-  
       update: function(dt) {
         this.game.update(dt);
       },
-  
       draw: function() {
         this.back2d.clearRect(0, 0, this.width, this.height);
         this.game.draw(this.back2d);
@@ -251,7 +224,6 @@ if (!Function.prototype.bind) {
         this.front2d.clearRect(0, 0, this.width, this.height);
         this.front2d.drawImage(this.back, 0, 0);
       },
-  
       resetStats: function() {
         this.stats = {
           count: 0,
@@ -261,7 +233,6 @@ if (!Function.prototype.bind) {
           frame: 0 // update + draw
         };
       },
-  
       updateStats: function(update, draw) {
         if (this.cfg.stats) {
           this.stats.update = Math.max(1, update);
@@ -272,7 +243,6 @@ if (!Function.prototype.bind) {
           this.stats.fps = Math.min(this.fps, 1000 / this.stats.frame);
         }
       },
-  
       drawStats: function(ctx) {
         if (this.cfg.stats) {
           ctx.fillText(
@@ -297,40 +267,34 @@ if (!Function.prototype.bind) {
           );
         }
       },
-  
       addEvents: function() {
         Game.addEvent(document, "keydown", this.onkeydown.bind(this));
         Game.addEvent(document, "keyup", this.onkeyup.bind(this));
       },
-  
       onkeydown: function(ev) {
         if (this.game.onkeydown) this.game.onkeydown(ev.keyCode);
       },
       onkeyup: function(ev) {
         if (this.game.onkeyup) this.game.onkeyup(ev.keyCode);
       },
-  
       hideCursor: function() {
         this.canvas.style.cursor = "none";
       },
       showCursor: function() {
         this.canvas.style.cursor = "auto";
       },
-  
       alert: function(msg) {
         this.stop(); // alert blocks thread, so need to stop game loop in order to avoid sending huge dt values to next update
         result = window.alert(msg);
         this.start();
         return result;
       },
-  
       confirm: function(msg) {
         this.stop(); // alert blocks thread, so need to stop game loop in order to avoid sending huge dt values to next update
         result = window.confirm(msg);
         this.start();
         return result;
       }
-  
       //-------------------------------------------------------------------------
     } // Game.Runner
   }; // Game
